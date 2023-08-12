@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import update from "immutability-helper";
 import MkdSDK from "../utils/MkdSDK";
 import DragAbleImages from "../components/DragAbleImages";
 const url =
@@ -7,7 +8,25 @@ const url =
 const AdminDashboardPage = () => {
   const [page, setPage] = useState(1);
   const [totalCount, setTotalCount] = useState();
-  const [data, setData] = useState();
+  const [data, setData] = useState([]);
+
+  const moveImage = (dragIndex, hoverIndex) => {
+    // Get the dragged element
+    const draggedImage = data[dragIndex];
+    /*
+      - copy the dragged image before hovered element (i.e., [hoverIndex, 0, draggedImage])
+      - remove the previous reference of dragged element (i.e., [dragIndex, 1])
+      - here we are using this update helper method from immutability-helper package
+    */
+    setData(
+      update(data, {
+        $splice: [
+          [dragIndex, 1],
+          [hoverIndex, 0, draggedImage],
+        ],
+      })
+    );
+  };
 
   let sdk = new MkdSDK();
   let limit = 10;
@@ -45,12 +64,12 @@ const AdminDashboardPage = () => {
           <p>Title</p>
           <p className=" pr-20">Author</p>
         </div>
-        {data?.map((datalist) => (
+        {data?.map((datalist, i) => (
           // <div
           //   className=" flex flex-row items-center border-2 border-gray-700 bg-black w-[90%] h-25  rounded-xl  mt-5 md:h-40"
           //   key={datalist.id}
           // >
-           
+
           //   <p className=" pr-3 pl-4 text-slate-300">{datalist.id}</p>
           //   <div className="img_div">
           //     <img
@@ -62,7 +81,12 @@ const AdminDashboardPage = () => {
           //   <p className="w-1/2 mr-10 text-slate-300">{datalist.title}</p>
           //   <p className=" pr-9 text-lime-800">{datalist.username} </p>
           // </div>
-          <DragAbleImages key={datalist.id} datalist={datalist}/>
+          <DragAbleImages
+            key={datalist.id}
+            datalist={datalist}
+            index={i}
+            moveImage={moveImage}
+          />
         ))}
         <div className=" flex space-x-4 mt-7">
           <button
