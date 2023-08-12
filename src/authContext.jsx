@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useCallback, useReducer } from "react";
 import MkdSDK from "./utils/MkdSDK";
 
 export const AuthContext = React.createContext();
@@ -48,30 +48,47 @@ export const tokenExpireError = (dispatch, errorMessage) => {
       // i changed it to Upper case
     });
     // below is already implemented in the LOGOUT case above so it can be removed from here
-    window.location.href = "/" + role + "/login";
+    // window.location.href = "/" + role + "/login";
   }
 };
 
 const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
 
-  React.useEffect(() => {
-    //TODO
-    // done
+  const memoized = useCallback(() => {
     const checkVerifyAuth = async () => {
       try {
         const authStatus = await sdk.check(state.role);
         console.log(authStatus);
-        if (authStatus.error) {
-          // if error, call the below funtion
-          tokenExpireError(dispatch, err.message);
-        }
+        return authStatus;
+
+        // if error, call the below funtion
+        // tokenExpireError(dispatch, authStatus.message);
       } catch (err) {
         console.log(err.message);
       }
     };
-    checkVerifyAuth();
+    return checkVerifyAuth;
   }, []);
+
+  React.useEffect(() => {
+    //TODO
+    // done
+    const newdata = memoized();
+    tokenExpireError(dispatch, newdata.message);
+    // const checkVerifyAuth = async () => {
+    //   try {
+    //     const authStatus = await sdk.check(state.role);
+    //     console.log(authStatus);
+    //     if (authStatus.error) {
+    //       tokenExpireError(dispatch, authStatus.message);
+    //     }
+    //   } catch (err) {
+    //     console.log(err.message);
+    //   }
+    // };
+    // checkVerifyAuth();
+  }, [state.token]);
 
   return (
     <AuthContext.Provider

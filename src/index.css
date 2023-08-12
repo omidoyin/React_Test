@@ -19,6 +19,63 @@ img {
   width: 50%;
   height: auto;
 }
+
+/* Views Animation */
+/* ::view-transition-old(root) {
+  animation: fade-and-scale-out 0.5s ease-in-out 1 forwards;
+}
+::view-transition-new(root) {
+  animation: fade-and-scale-in 3s ease-in-out 1 forwards;
+} */
+
+::view-transition-old(root) {
+  animation: slide-out 0.1s ease-in-out 1 forwards;
+}
+::view-transition-new(root) {
+  animation: slide-in .5s ease-in-out 1 forwards;
+}
+
+@keyframes fade-and-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes fade-and-scale-out {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+/* Second animation */
+@keyframes slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes slide-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+}
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;

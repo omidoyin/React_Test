@@ -5,6 +5,7 @@ import SnackBar from "./components/SnackBar";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import NavBar from "./components/NavBar";
 
 function renderRoutes(role) {
   switch (role) {
@@ -21,7 +22,12 @@ function renderRoutes(role) {
     default:
       return (
         <Routes>
-          <Route exact path="/admin/login" element={<AdminLoginPage />}></Route>
+          <Route
+            index
+            exact
+            path="/admin/login"
+            element={<AdminLoginPage />}
+          ></Route>
           <Route path="/*" exact element={<NotFoundPage />}></Route>
         </Routes>
       );
@@ -36,23 +42,7 @@ function Main() {
     <div className="h-full">
       <div className="flex w-full">
         <div className="w-full">
-          <div className=" flex justify-evenly border-4 p-6">
-            <button className="border-2 px-3 bg-black rounded-lg text-gray-200"
-              onClick={() => {
-                navigate("/admin/login");
-              }}
-            >
-              Login
-            </button>
-            <button
-             className="border-2 px-3 bg-black rounded-lg text-gray-200"
-              onClick={() => {
-                dispatch({ type: "LOGOUT" });
-              }}
-            >
-              LogOut
-            </button>
-          </div>
+          <NavBar />
           <div className="page-wrapper w-full py-10 px-5">
             {!state.isAuthenticated
               ? renderRoutes("none")

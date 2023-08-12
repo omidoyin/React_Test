@@ -3,11 +3,7 @@ import { useDrag, useDrop } from "react-dnd";
 
 const DragAbleImages = ({ datalist, index, moveImage }) => {
   const ref = useRef(null)
-    // const[board,setBoard]=useState([])
-    // useEffect(()=>{
-    //     setBoard(datalist)
-    // },[])
-
+    
   const [{ isDragging }, drag, dragPreview] = useDrag(() => ({
     type: "div",
     item:{id:datalist.id, index},
@@ -17,53 +13,47 @@ const DragAbleImages = ({ datalist, index, moveImage }) => {
 
     }),
   }));
-
-  const [{ canDrop, isOver }, drop] = useDrop(() => ({
-    // The type (or types) to accept - strings or symbols
-    accept: 'div',
-    // Props to collect
-    hover(item) { // item is the dragged element
+   
+  const [{ canDrop, isOver }, drop] = useDrop({
+    accept: "div",
+    hover: (item, monitor) => {
       if (!ref.current) {
         return;
       }
-      const dragIndex = item.index;
-      // current element where the dragged element is hovered on
-      const hoverIndex = index;
-      // If the dragged element is hovered in the same place, then do nothing
-      if (dragIndex === hoverIndex) { 
-        return;
-      }
-      // If it is dragged around other elements, then move the image and set the state with position changes
-      moveImage(dragIndex, hoverIndex);
-      /*
-        Update the index for dragged item directly to avoid flickering
-        when the image was half dragged into the next
-      */
-      item.index = hoverIndex;
-    },
-    // didnt use the following
-    // drop:(item)=>addImage(item.id),
-    collect: (monitor) => ({
-      isOver: monitor.isOver(),
-      canDrop: monitor.canDrop()
-    })
-  }))
+  const dragIndex = item.index;
+  const hoverIndex = index;
+  
+  if (dragIndex === hoverIndex) {
+              return;
+  }
+  const hoverBoundingRect = ref.current?.getBoundingClientRect();
+  const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
+  
+  const clientOffset = monitor.getClientOffset();
+  const hoverClientY = clientOffset.y - hoverBoundingRect.top;
+  
+  if (dragIndex < hoverIndex && hoverClientY < hoverMiddleY) {
+       return;
+  }
+  
+  if (dragIndex > hoverIndex && hoverClientY > hoverMiddleY) {
+      return;
+  }
+  
+  moveImage(dragIndex, hoverIndex);
+  
+  item.index = hoverIndex;
+  
+  }
+  });
 
 drag(drop(ref))
-
-
-// didnt use this
-  const addImage =(id)=>{
-    console.log(id);
-    const image = datalist?.filter(data=> id ===data.id)
-    setBoard([image[0]])
-    // setBoard(board=>[...board, image[0]])
-  }
 
   return (
    
      
     <div
+    onClick={()=>{console.log(index);}}
       ref={ref}
       style={{ opacity: isDragging ? 0.5 : 1 }}
       className=" flex flex-row items-center border-2 border-gray-700 bg-black w-[90%] h-25  rounded-xl  mt-5 md:h-40 cursor-pointer"

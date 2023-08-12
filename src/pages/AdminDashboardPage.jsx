@@ -10,23 +10,26 @@ const AdminDashboardPage = () => {
   const [totalCount, setTotalCount] = useState();
   const [data, setData] = useState([]);
 
-  const moveImage = (dragIndex, hoverIndex) => {
-    // Get the dragged element
-    const draggedImage = data[dragIndex];
-    /*
-      - copy the dragged image before hovered element (i.e., [hoverIndex, 0, draggedImage])
-      - remove the previous reference of dragged element (i.e., [dragIndex, 1])
-      - here we are using this update helper method from immutability-helper package
-    */
-    setData(
-      update(data, {
-        $splice: [
-          [dragIndex, 1],
-          [hoverIndex, 0, draggedImage],
-        ],
-      })
-    );
-  };
+  // const moveImage = (dragIndex, hoverIndex) => {
+  //   const draggedImage = data[dragIndex];
+
+  //   setData(
+  //     update(data, {
+  //       $splice: [
+  //         [dragIndex, 1],
+  //         [hoverIndex, 0, draggedImage],
+  //       ],
+  //     })
+  //   );
+  // };
+  const moveImage = React.useCallback((dragIndex, hoverIndex) => {
+    setData((prevCards) => {
+      const clonedCards = [...prevCards];
+      const removedItem = clonedCards.splice(dragIndex, 1)[0];
+      clonedCards.splice(hoverIndex, 0, removedItem);
+      return clonedCards;
+    });
+  }, []);
 
   let sdk = new MkdSDK();
   let limit = 10;
@@ -82,7 +85,7 @@ const AdminDashboardPage = () => {
           //   <p className=" pr-9 text-lime-800">{datalist.username} </p>
           // </div>
           <DragAbleImages
-            key={datalist.id}
+            key={i}
             datalist={datalist}
             index={i}
             moveImage={moveImage}
