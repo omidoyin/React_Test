@@ -1,6 +1,6 @@
-import React, { useCallback, useReducer } from "react";
+import React, { useCallback, useMemo, useReducer, useState } from "react";
 import MkdSDK from "./utils/MkdSDK";
-
+import { useNavigate } from "react-router-dom";
 export const AuthContext = React.createContext();
 
 const initialState = {
@@ -26,11 +26,12 @@ const reducer = (state, action) => {
       };
     case "LOGOUT":
       localStorage.clear();
-      window.location.href = "/" + "admin" + "/login";
       return {
         ...state,
         isAuthenticated: false,
         user: null,
+        token: null,
+        role: null,
       };
     default:
       return state;
@@ -43,52 +44,41 @@ export const tokenExpireError = (dispatch, errorMessage) => {
   const role = localStorage.getItem("role");
   if (errorMessage === "TOKEN_EXPIRED") {
     dispatch({
-      type: "LOGOUT",
-      // type: "Logout",
-      // i changed it to Upper case
+      type: "Logout",
     });
-    // below is already implemented in the LOGOUT case above so it can be removed from here
+    // below is causing a re-render of the page so i replaced it.
     // window.location.href = "/" + role + "/login";
+    const newUrl = `/${role}/login`;
+    history.pushState({}, null, newUrl);
   }
 };
 
 const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [statusMessage, setStatusMessage] = useState();
 
-  const memoized = useCallback(() => {
-    const checkVerifyAuth = async () => {
-      try {
-        const authStatus = await sdk.check(state.role);
-        console.log(authStatus);
-        return authStatus;
-
-        // if error, call the below funtion
-        // tokenExpireError(dispatch, authStatus.message);
-      } catch (err) {
-        console.log(err.message);
-      }
-    };
-    return checkVerifyAuth;
-  }, []);
+  const mem = useCallback(
+    () => tokenExpireError(dispatch, statusMessage),
+    [statusMessage]
+  );
 
   React.useEffect(() => {
     //TODO
     // done
-    const newdata = memoized();
-    tokenExpireError(dispatch, newdata.message);
-    // const checkVerifyAuth = async () => {
-    //   try {
-    //     const authStatus = await sdk.check(state.role);
-    //     console.log(authStatus);
-    //     if (authStatus.error) {
-    //       tokenExpireError(dispatch, authStatus.message);
-    //     }
-    //   } catch (err) {
-    //     console.log(err.message);
-    //   }
-    // };
-    // checkVerifyAuth();
-  }, [state.token]);
+    const checkVerifyAuth = async () => {
+      try {
+        const authStatus = await sdk.check(state.role);
+        console.log(authStatus);
+        setStatusMessage(authStatus.message);
+        if (authStatus.error == true && !state.token && !state.role) {
+          mem();
+        }
+      } catch (err) {
+        console.log(err.message);
+      }
+    };
+    checkVerifyAuth();
+  }, [mem, state]);
 
   return (
     <AuthContext.Provider

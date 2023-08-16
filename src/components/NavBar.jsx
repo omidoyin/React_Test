@@ -7,6 +7,7 @@ const NavBar = () => {
   const { dispatch, state } = React.useContext(AuthContext);
   const role = state.role;
   const token = state.token;
+  // const token1 = localStorage.getItem('token');
   const navigate = useNavigate();
   const viewNavigate = (newRoute) => {
     // Navigate to the new route
@@ -18,6 +19,7 @@ const NavBar = () => {
       });
     }
   };
+  // console.log(role, token, token1);
   return (
     <div className=" flex justify-evenly border-4 p-6">
       <button
@@ -42,6 +44,7 @@ const NavBar = () => {
       >
         LogOut
       </button>
+     
     </div>
   );
 };

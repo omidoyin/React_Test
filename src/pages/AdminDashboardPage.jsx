@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
-import update from "immutability-helper";
+import React, { useCallback, useEffect, useState } from "react";
 import MkdSDK from "../utils/MkdSDK";
 import DragAbleImages from "../components/DragAbleImages";
+
+import update from "immutability-helper";
 const url =
   " https://www.figma.com/file/veiESwD61KJBa7BpEHtbdl/react-task-2?node-id=1086%3A15525";
 
@@ -10,25 +11,15 @@ const AdminDashboardPage = () => {
   const [totalCount, setTotalCount] = useState();
   const [data, setData] = useState([]);
 
-  // const moveImage = (dragIndex, hoverIndex) => {
-  //   const draggedImage = data[dragIndex];
-
-  //   setData(
-  //     update(data, {
-  //       $splice: [
-  //         [dragIndex, 1],
-  //         [hoverIndex, 0, draggedImage],
-  //       ],
-  //     })
-  //   );
-  // };
-  const moveImage = React.useCallback((dragIndex, hoverIndex) => {
-    setData((prevCards) => {
-      const clonedCards = [...prevCards];
-      const removedItem = clonedCards.splice(dragIndex, 1)[0];
-      clonedCards.splice(hoverIndex, 0, removedItem);
-      return clonedCards;
-    });
+  const moveCard = useCallback((dragIndex, hoverIndex) => {
+    setData((prevCards) =>
+      update(prevCards, {
+        $splice: [
+          [dragIndex, 1],
+          [hoverIndex, 0, prevCards[dragIndex]],
+        ],
+      })
+    );
   }, []);
 
   let sdk = new MkdSDK();
@@ -42,8 +33,8 @@ const AdminDashboardPage = () => {
       setData(videoList.list);
       // console.log(videoList);
 
-      const newdata = await sdk.check("admin");
-      console.log(newdata);
+      // const newdata = await sdk.check("admin");
+      // console.log(newdata);
     };
     fetch();
   }, [page]);
@@ -56,41 +47,36 @@ const AdminDashboardPage = () => {
     }
   };
 
+  const renderCard = useCallback((card, index) => {
+    return (
+      <DragAbleImages
+        key={card.id}
+        index={index}
+        id={card.id}
+        img={card.photo}
+        title={card.title}
+        username={card.username}
+        moveCard={moveCard}
+      />
+    );
+  }, []);
+
   return (
     <>
-      <div className="flex flex-col justify-center items-center w-full  p-5 bg-black relative">
-        <h2 className=" text-3xl p-3 flex justify-start absolute left-0 top-0 z-10 text-gray-300">
+      <div className="flex flex-col justify-center items-center w-full  p-9 bg-black relative container">
+        <h2 className=" text-3xl p-6 flex justify-start absolute left-0 top-0 z-10 text-gray-300">
           Dashboard
         </h2>
-        <div className=" flex flex-row justify-between items-center  w-[90%]  rounded-xl  mt-20 text-gray-600">
-          <p>#</p>
-          <p>Title</p>
-          <p className=" pr-20">Author</p>
+        <div
+          // className=" flex flex-row justify-between items-center  w-[90%]  rounded-xl  mt-20 text-gray-600 px-10"
+          className=" flex flex-row items-center justify-between  border-gray-700 bg-black w-[76%] h-fit  rounded-xl  mt-20 md:h-fit "
+        >
+          <p className=" pl-10 text-slate-300">#</p>
+          <p className=" mr-10 text-slate-300">Title</p>
+          <p className=" pr-9 mr-20 text-slate-300">Author</p>
         </div>
-        {data?.map((datalist, i) => (
-          // <div
-          //   className=" flex flex-row items-center border-2 border-gray-700 bg-black w-[90%] h-25  rounded-xl  mt-5 md:h-40"
-          //   key={datalist.id}
-          // >
+        {<div>{data.map((card, i) => renderCard(card, i))}</div>}
 
-          //   <p className=" pr-3 pl-4 text-slate-300">{datalist.id}</p>
-          //   <div className="img_div">
-          //     <img
-          //       src={datalist.photo}
-          //       alt=""
-          //       className=" object-cover rounded-md"
-          //     />
-          //   </div>
-          //   <p className="w-1/2 mr-10 text-slate-300">{datalist.title}</p>
-          //   <p className=" pr-9 text-lime-800">{datalist.username} </p>
-          // </div>
-          <DragAbleImages
-            key={i}
-            datalist={datalist}
-            index={i}
-            moveImage={moveImage}
-          />
-        ))}
         <div className=" flex space-x-4 mt-7">
           <button
             className="border-2 p-3 bg-black-600 rounded-lg text-gray-200"
