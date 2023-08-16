@@ -31,10 +31,6 @@ const AdminDashboardPage = () => {
 
       setTotalCount(videoList.total / limit);
       setData(videoList.list);
-      // console.log(videoList);
-
-      // const newdata = await sdk.check("admin");
-      // console.log(newdata);
     };
     fetch();
   }, [page]);
@@ -67,10 +63,7 @@ const AdminDashboardPage = () => {
         <h2 className=" text-3xl p-6 flex justify-start absolute left-0 top-0 z-10 text-gray-300">
           Dashboard
         </h2>
-        <div
-          // className=" flex flex-row justify-between items-center  w-[90%]  rounded-xl  mt-20 text-gray-600 px-10"
-          className=" flex flex-row items-center justify-between  border-gray-700 bg-black w-[76%] h-fit  rounded-xl  mt-20 md:h-fit "
-        >
+        <div className=" flex flex-row items-center justify-between  border-gray-700 bg-black w-[76%] h-fit  rounded-xl  mt-20 md:h-fit ">
           <p className=" pl-10 text-slate-300">#</p>
           <p className=" mr-10 text-slate-300">Title</p>
           <p className=" pr-9 mr-20 text-slate-300">Author</p>

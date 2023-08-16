@@ -3,11 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../authContext";
 
 const NavBar = () => {
-  // const[role]
   const { dispatch, state } = React.useContext(AuthContext);
   const role = state.role;
   const token = state.token;
-  // const token1 = localStorage.getItem('token');
   const navigate = useNavigate();
   const viewNavigate = (newRoute) => {
     // Navigate to the new route
@@ -19,14 +17,12 @@ const NavBar = () => {
       });
     }
   };
-  // console.log(role, token, token1);
   return (
     <div className=" flex justify-evenly border-4 p-6">
       <button
         className="border-2 px-3 bg-black rounded-lg text-gray-200"
         onClick={() => {
           viewNavigate("/admin/login");
-        //   navigate("/admin/login");
         }}
         style={{ backgroundColor: token && "gray" }}
         disabled={token}
@@ -44,7 +40,6 @@ const NavBar = () => {
       >
         LogOut
       </button>
-     
     </div>
   );
 };

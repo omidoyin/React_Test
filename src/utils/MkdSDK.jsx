@@ -115,7 +115,6 @@ export default function MkdSDK() {
         "cmVhY3R0YXNrOmQ5aGVkeWN5djZwN3p3OHhpMzR0OWJtdHNqc2lneTV0Nw==",
       Authorization: "Bearer " + localStorage.getItem("token"),
     };
-    // console.log(role);
     const checkAuth = await fetch(this._baseurl + `/v2/api/lambda/check`, {
       method: "post",
       headers: header,

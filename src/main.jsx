@@ -1,6 +1,6 @@
 import React from "react";
 import { AuthContext } from "./authContext";
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import SnackBar from "./components/SnackBar";
 import AdminDashboardPage from "./pages/AdminDashboardPage";
 import AdminLoginPage from "./pages/AdminLoginPage";
@@ -37,11 +37,11 @@ function renderRoutes(role) {
 
 function Main() {
   const { dispatch, state } = React.useContext(AuthContext);
-  const navigate = useNavigate();
   return (
     <div className="h-full">
       <div className="flex w-full">
         <div className="w-full">
+          {/* displayed NavBar at the Top level */}
           <NavBar />
           <div className="page-wrapper w-full py-10 px-5">
             {!state.isAuthenticated

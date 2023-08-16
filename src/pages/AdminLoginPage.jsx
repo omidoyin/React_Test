@@ -41,7 +41,6 @@ const AdminLoginPage = () => {
     //TODO
     // done
   };
-  console.log();
 
   return (
     <div className="w-full max-w-xs mx-auto">
